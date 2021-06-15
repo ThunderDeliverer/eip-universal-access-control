@@ -1,7 +1,7 @@
 ---
 eip: <to be assigned>
 title: Universal Smart Contract Access Control
-author: Jan Turk (jan.turk@infinum.com)
+author: Jan Turk (theonethunder@protonmail.com)
 discussions-to: <URL>
 status: Draft
 type: Standards Track
@@ -11,25 +11,25 @@ created: 2021-03-01
 
 ## Simple Summary
 
-Univesal Smart Contract Access Control (USCAC) provides a unified access control for any number of related, or unrelated, smart contracts. In stead of specifying access control in each smart contract, the USCAC interface is used to provide the mechanic for limiting the execution of functions to various tenants like owners, administrators and other tennants. It allows smart contracts to specify the number of tenant tiers it wants to use and specifies the management API.
+Universal Smart Contract Access Control (USCAC) provides unified access control for any number of related, or unrelated smart contracts. Instead of specifying access control in each smart contract, the USCAC interface is used to provide the mechanics for limiting the execution of functions to various tenants like owners, administrators and other tenants. It allows smart contracts to specify the number of tenant tiers it wants to use and specifies the management API.
 
 ## Abstract
 
-Access control is currently specified in each smart contract that need it. Usuallt there are owners and amdinistrators defined. If a smart contract requires additional levels of tennants, that has to be added by the developer. Addinf access control to a smart contract increases its size and that is an issue in an ecosystem where each bit matters.
-USCAC provides a unified interface to be securely used in stead of including the access control to each smart contract that needs it. It specifies the interface that includes adding, removing and viewing the tennants.
+Access control is currently specified in each smart contract for which it is needed. Usually, there are owners and administrators defined. If a smart contract requires additional levels of tenants, these must be added by the developer. Adding access control to a smart contract increases its size, which is an issue in an ecosystem where each bit matters.
+USCAC provides a unified interface to be securely used instead of including the access control to each smart contract that needs it. It specifies the interface that includes adding, removing and viewing the tenants.
 
 ## Motivation
 
-Each smart contract that isn't self owned requires some level of access control. This means that most of the smart contracts have to implement the same part of code that makes sure, only authorised users can call certain functions. Even if that part of the source code is copy-pasted, it is not impervious to errors. Additionally it takes away some cunk of smart contract file size which is limited and could be used by business logic.
+Each smart contract that isn’t self owned requires some level of access control. This means that most of the smart contracts have to implement the same part of code that ensures only authorised users can call certain functions. Even if that part of the source code is copy-pasted, it is not impervious to errors. Additionally, it takes away some chunk of the smart contract file size which is limited and could be used by business logic.
 
-Implementing USCAC allows the developer of a smart contract to focus on the mechanics of the smart conrtact and hand off the access control to USCAC. This way the access control is executed in a standardised and reliable way and alleviates a part of smart contract development.
+Implementing USCAC allows the developer of a smart contract to focus on the mechanics of the smart contract and hand off the access control to USCAC. This way the access control is executed in a standardised and reliable way and alleviates a part of smart contract development.
 
 ## Specification
 
 ### Initial setup
 
-- This hould be called in the `constructor()`, so that the USCAC gets the information about the number of access tiers to setup.
-- Top level of access tiers is reserved for owners and there can only be one (so if you whish to have owners and administrators included, the number of tiers should be `2`)
+- This should be called in the `constructor()`, so that the USCAC gets the information about the number of access tiers to set up.
+- Top level of access tiers is reserved for owners and there can only be one (so if you wish to have owners and administrators included, the number of tiers should be `2`)
 - If the `initialOwner` value is set to `0x0`, the owner position will default to `msg.sender`
 
 ```js
@@ -49,7 +49,7 @@ Transfers the `owner` permissions to the `newOwner`.
 **NOTES**
 
 - Since there is only one owner it makes no sense to change access rights, they should only be transferrable
-- Because another smart contract is called, the `msg.sender`should be passed as the `caller`value
+- Because another smart contract is called, the `msg.sender` should be passed as the `caller` value
 
 ```js
 function transferOwnership(address caller, address newOwner) public returns (bool)
@@ -61,7 +61,7 @@ Allows authorised tenant to modify per-level access rights for other tenants.
 
 `level` signifies the tenant level. It is and `uint256` value, which can be applied by the developer of the smart contract.
 
-`tenant` is the address of the tennant that we are modifying access rights for.
+`tenant` is the address of the tenant that we are modifying access rights for.
 
 `accessPermitted` specifies whether we are granting or revoking access rights to the before mentioned tenant.
 
@@ -71,9 +71,9 @@ Allows authorised tenant to modify per-level access rights for other tenants.
 
 **NOTES**
 
-- Modifiers should check if the `msg.sender`is allowed to call this function
+- Modifiers should check if the `msg.sender` is allowed to call this function
 - Assuming that higher tier of tenant can modify lower tier of tenants is wrong, because some use cases might just require different tenants that are not hierarchically lower or higher than another, they are just limited to calling different functions
-- If the `tenant`allready has this `level` of access rights, the function should be reverted by USCAC, since there is no use in performing redundant operations
+- If the `tenant` already has this `level` of access rights, the function should be reverted by USCAC, since there is no use in performing redundant operations
 
 ```js
 function manageAccessRights(uint256 level, address tenant, bool accessPermitted) MODIFIER public returns (bool)
@@ -99,17 +99,17 @@ function isOwner(address tenant) public view returns (bool)
 
 Checks whether the specified address has specified level's access permissions or not.
 
-`level`specifies the tenant level we are chesking.
+`level` specifies the tenant level we are checking.
 
-`tenant` specifies the address we are checkig the access rights for.
+`tenant` specifies the address we are checking the access rights for.
 
-`bool` is a feedbas for whether the `tenant` has (`true`) or doesn't have (`false`) the access rights for the specified `level`.
+`bool` is a feedback for whether the `tenant` has (`true`) or doesn't have (`false`) the access rights for the specified `level`.
 
 ```js
 function hasLevelAccessPermission(uint256 level, address tenant) public view returns (bool)
 ```
 
-### Transferring the access controll database
+### Transferring the access control database
 
 If a smart contract needs to be updated, but the access permissions should remain the same for all of the tenants, the migration mechanic should be used.
 
@@ -121,9 +121,9 @@ The *original* smart contract should initiate the migration.
 
 `newSmartContract` is the address of the smart contract intended to receive the migrated access control database.
 
-`MODIFIER` restrihe bility to initia migration to the desired level or levels of tenant(s).
+`MODIFIER` restricts ability to initialise migration to the desired level or levels of tenant(s).
 
-`bool` signalls that the mighration was initiated.
+`bool` signals that the migration was initiated.
 
 **NOTES**
 
@@ -141,7 +141,7 @@ The *updated* smart contract should accept the migration.
 
 `previousSmartContract` is the address of the smart contract from which we are accepting the access control database.
 
-`bool` signal the successful migration of the access controsle and subsequent completion of the migration.
+`bool` signal the successful migration of the access control and subsequent completion of the migration.
 
 **NOTES**
 
@@ -158,7 +158,7 @@ The *original* smart contract should be able to cancel the access control databa
 
 `MODIFIER` should restrict calling of the function to only desired level or levels of tenant(s).
 
-`bool` signifies the successful termination of the migratioon process.
+`bool` signifies the successful termination of the migration process.
 
 **NOTES**
 
@@ -174,9 +174,9 @@ function cancelAccessControlMigration() MODIFIER public returns (bool)
 
 #### OwnershipTransfer
 
-MUST trugger when ownership is transferred.
+MUST trigger when ownership is transferred.
 
-When initially setting the owner, the ownership is transferred from address `0x0`to the initial owner.
+When initially setting the owner, the ownership is transferred from address `0x0` to the initial owner.
 
 ```js
 event OwnershipTransfer(address indexed smartContract, address indexed previousOwner, address indexed newOwner)
@@ -205,7 +205,7 @@ event AccessControlMigration(address originalSmartContract, address newSmartCont
 ```
 
 ## Test Cases
-The example smart contrat using USCAC is available at the [Infinum repository](https://github.com/infinum/ethereum-universal-access-control).
+The example smart contract using USCAC is available at the [Infinum repository](https://github.com/infinum/ethereum-universal-access-control).
 
 ## Copyright
 Copyright and related rights waived via [CC0](https://creativecommons.org/publicdomain/zero/1.0/).
